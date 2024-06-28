@@ -1,0 +1,200 @@
+<%- include('header') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url("img2.jpg") no-repeat center center fixed; /* Replace 'image.png' with the actual URL of your image */
+            background-size: cover;
+            margin: 0;
+            filter: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .content {
+            margin-top: 120px; /* Adjusted margin to account for fixed header */
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 30px;
+        }
+        .container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #333;
+        }
+        .container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .container form input {
+            margin-bottom: 20px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .container form button {
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .container form button:hover {
+            background-color: #0056b3;
+        }
+        .sport-box {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .sport-box .sport-info {
+            display: flex;
+            flex-direction: column;
+        }
+        .sport-box a {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .sport-box a:hover {
+            background-color: #0056b3;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            if (<%= showChangePasswordModal %>) {
+                openModal();
+            }
+        });
+
+        function openModal() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+    <div class="content">
+        <a href="/reports" style="margin-bottom: 19px; display: inline-block; padding: 10px 20px; font-size: 16px; font-weight: bold; color: white; background-color: green; text-decoration: none; border-radius: 5px; text-align: center;">Reports</a>
+        <div class="container" style="width: fit-content;">
+            <h1>Create Sport</h1>
+            <form action="/createsport" method="POST">
+                <input type="text" name="name" placeholder="Sport Name" required>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit">Create</button>
+            </form>
+        </div>
+        <div class="container">
+            <h1>All Sports</h1>
+            <div>
+                <% if(sports.length > 0) { 
+                    sports.forEach((sport, index) => { %>
+                        <div class="sport-box">
+                            <div class="sport-info">
+                                <strong>Name:</strong> <%= sport.name %><br>
+                                <strong>Creator:</strong> <%= sport.creator %>
+                            </div>
+                            <a href="/opensessions/<%= sport.name %>">Open</a>
+                        </div>
+                <% }); } else { %>
+                    <p>No sports available</p>
+                <% } %>
+            </div>
+        </div>
+       
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Change Password</h2>
+            <form action="/change-password" method="POST">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <% if (errorMessage[0] &&( errorMessage[0].includes('password')|| errorMessage[0].includes('match'))) { %>
+                    <div class="alert alert-danger"><%= errorMessage[0] %></div>
+                <% } %>
+                <div class="field">
+                    <input type="password" name="currentPassword" placeholder="Current Password" required>
+                </div>
+                <div class="field">
+                    <input type="password" name="newPassword" placeholder="New Password" required>
+                </div>
+                <div class="field">
+                    <input type="password" name="confirmNewPassword" placeholder="Confirm New Password" required>
+                </div>
+                <div class="field btn">
+                    <div class="btn-layer"></div>
+                    <input type="submit" value="Change Password">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
