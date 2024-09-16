@@ -1,4 +1,4 @@
-<%- include('header2') %>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,7 +18,7 @@
         body {
             
            
-            background-image: url("./img4.jpg") no-repeat center center fixed; /* Replace 'image.png' with the actual URL of your image */
+            background-color: #e2e4e9; /* Replace 'image.png' with the actual URL of your image */
             background-size: cover;
             margin: 0;
             filter: none;
@@ -29,7 +29,7 @@
         }
 
         .container {
-            background-color: #fff;
+            background-color: white;
             
             padding: 25px;
             border-radius: 8px;
@@ -163,7 +163,7 @@
 
 <body>
     <div class="container">
-        <h1>Sessions for <%= sport.name %></h1>
+        <h1 style="color: #0073e6;">Sessions for <%= sport.name %></h1>
         <% if (errorMessage && errorMessage.length > 0) { %>
             <div class="alert alert-danger">
                 <%= errorMessage %>
